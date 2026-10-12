@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Fictional educational technology tracking practice site.">
+  <title>EduTech Solutions | Tracking Lab</title>
+  <!-- GTM installation will be added during Module 4. -->
+  <style>
+    :root { color-scheme: light; font-family: system-ui,-apple-system,Segoe UI,sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f5f8fc; color: #172b4d; line-height: 1.6; }
+    header { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 18px max(24px,calc((100% - 1040px)/2)); font-weight: 800; }
+    main { max-width: 1040px; margin: auto; padding: 52px 24px 76px; }
+    .eyebrow { color: #0f766e; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; font-size: .78rem; }
+    h1 { font-size: clamp(2rem,5vw,3.5rem); line-height: 1.12; margin: 12px 0 20px; }
+    h2 { margin-top: 0; }
+    p { color: #4c5b70; }
+    .hero { max-width: 780px; padding-bottom: 42px; }
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; margin: 28px 0; }
+    .button { display: inline-block; border: 0; border-radius: 9px; padding: 13px 18px; background: #086f67; color: #fff; text-decoration: none; font: inherit; font-weight: 700; cursor: pointer; }
+    .button.secondary { color: #086f67; background: #e2f2ee; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap: 18px; }
+    .card { background: #fff; padding: 27px; border: 1px solid #e2e8f0; border-radius: 14px; box-shadow: 0 4px 15px #10234008; }
+    .field { display: grid; gap: 6px; margin: 13px 0; }
+    label { font-weight: 650; }
+    input,select { width: 100%; padding: 11px; border: 1px solid #bac9d8; border-radius: 7px; font: inherit; background: #fff; }
+    .note { font-size: .88rem; color: #5d6879; }
+    #feedback { font-weight: 750; color: #086f67; min-height: 1.6em; }
+    footer { text-align: center; font-size: .85rem; color: #6a7483; padding: 25px; }
+  </style>
+</head>
+<body>
+  <header>EduTech Solutions <span style="font-weight:400;color:#64748b">· Tracking Lab</span></header>
+  <main>
+    <section class="hero">
+      <div class="eyebrow">Fictional B2B training website</div>
+      <h1>Make classroom technology easier to adopt.</h1>
+      <p>Explore interactive classroom panels with installation, teacher onboarding and technical support. This page is a simulated environment for learning web analytics—not a real seller.</p>
+      <div class="actions">
+        <a class="button" href="#demo">Request a demo</a>
+        <button class="button secondary" id="whatsapp-button" type="button">Simulate WhatsApp click</button>
+      </div>
+      <p id="wa-feedback" class="note" aria-live="polite"></p>
+    </section>
+    <section class="grid" aria-label="Features">
+      <article class="card"><h2>Interactive learning</h2><p>Explore classroom collaboration and screen-sharing features.</p></article>
+      <article class="card"><h2>Teacher onboarding</h2><p>Understand how structured training supports adoption.</p></article>
+      <article class="card"><h2>Technical support</h2><p>Plan installation, troubleshooting and school IT coordination.</p></article>
+    </section>
+    <section id="demo" style="margin-top:42px" class="card">
+      <h2>Request a demo — simulation</h2>
+      <p class="note">Use invented sample details only. This demo does not send, store or email information. Do not enter real personal details.</p>
+      <form id="demo-form">
+        <div class="field"><label for="school">Fictional school name</label><input id="school" name="school" placeholder="Example Academy" required maxlength="90"></div>
+        <div class="field"><label for="role">Enquirer role</label><select id="role" name="role" required><option value="">Select role</option><option>Principal</option><option>IT coordinator</option><option>Procurement</option><option>Teacher</option><option>Other</option></select></div>
+        <div class="field"><label for="need">Primary need</label><select id="need" name="need" required><option value="">Select need</option><option>Interactive panels</option><option>Installation support</option><option>Teacher training</option></select></div>
+        <button class="button" type="submit">Simulate form submission</button>
+      </form>
+      <p id="feedback" role="status" aria-live="polite"></p>
+    </section>
+  </main>
+  <footer>Training project only · No actual WhatsApp, sales or CRM integration</footer>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    document.querySelector('#whatsapp-button').addEventListener('click',function(){
+      window.dataLayer.push({event:'whatsapp_cta_click',cta_location:'hero',event_source:'simulation'});
+      document.querySelector('#wa-feedback').textContent='Simulated WhatsApp CTA click recorded locally. No conversation was started.';
+    });
+    document.querySelector('#demo-form').addEventListener('submit',function(event){
+      event.preventDefault();
+      if(!this.reportValidity()) return;
+      window.dataLayer.push({event:'demo_form_submitted',event_source:'simulation'});
+      document.querySelector('#feedback').textContent='Simulation successful. No information was sent or stored.';
+      this.reset();
+    });
+  </script>
+</body>
+</html>
