@@ -1,13 +1,25 @@
 
-module.exports = function handler(req, res) {
-  if (req.method !== "GET") {
+module.exports = async function handler(req, res) {
+  if (req.method !== "POST") {
     return res.status(405).json({
-      error: "Method not allowed"
+      error: "Only POST requests are allowed"
     });
   }
 
+  const { event_type } = req.body || {};
+
+  if (event_type !== "demo_request") {
+    return res.status(400).json({
+      success: false,
+      error: "Invalid event type"
+    });
+  }
+
+  const event_id = "demo_" + crypto.randomUUID();
+
   return res.status(200).json({
     success: true,
-    message: "EduTech Backend API is working!"
+    event_id: event_id,
+    message: "Demo request event received"
   });
 };
