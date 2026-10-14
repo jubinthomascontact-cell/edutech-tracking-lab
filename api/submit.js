@@ -1,8 +1,28 @@
 
+const crypto = require("node:crypto");
+
 module.exports = async function handler(req, res) {
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    "https://jubinthomascontact-cell.github.io"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "POST, OPTIONS"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type"
+  );
+
+  if (req.method === "OPTIONS") {
+    return res.status(204).end();
+  }
+
   if (req.method !== "POST") {
     return res.status(405).json({
-      error: "Only POST requests are allowed"
+      success: false,
+      error: "Method not allowed"
     });
   }
 
@@ -19,7 +39,7 @@ module.exports = async function handler(req, res) {
 
   return res.status(200).json({
     success: true,
-    event_id: event_id,
+    event_id,
     message: "Demo request event received"
   });
 };
