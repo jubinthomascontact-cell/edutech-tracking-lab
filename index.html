@@ -78,12 +78,58 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       window.dataLayer.push({event:'whatsapp_cta_click',cta_location:'hero',event_source:'simulation'});
       document.querySelector('#wa-feedback').textContent='Simulated WhatsApp CTA click recorded locally. No conversation was started.';
     });
-    document.querySelector('#demo-form').addEventListener('submit',function(event){
-      event.preventDefault();
-      if(!this.reportValidity()) return;
-      window.dataLayer.push({event:'demo_form_submitted',event_source:'simulation'});
-      document.querySelector('#feedback').textContent='Simulation successful. No information was sent or stored.';
+    
+document.querySelector('#demo-form')
+  .addEventListener('submit', async function(event) {
+    event.preventDefault();
+
+    if (!this.reportValidity()) return;
+
+    const feedback = document.querySelector('#feedback');
+    feedback.textContent = 'Sending test request...';
+
+    try {
+      const response = await fetch(
+        'https://edutech-tracking-api.vercel.app/api/submit',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            event_type: 'demo_request'
+          })
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Backend rejected the request');
+      }
+
+      const result = await response.json();
+
+      if (!result.success || !result.event_id) {
+        throw new Error('Invalid backend response');
+      }
+
+      window.dataLayer.push({
+        event: 'demo_form_submitted',
+        event_id: result.event_id,
+        event_source: 'simulation'
+      });
+
+      feedback.textContent =
+        'Test request accepted. Event ID: ' + result.event_id;
+
       this.reset();
+
+    } catch (error) {
+      feedback.textContent =
+        'Test request failed. Please try again.';
+      console.error(error);
+    }
+  });
+
     });
   </script>
 </body>
