@@ -37,9 +37,73 @@ module.exports = async function handler(req, res) {
 
   const event_id = "demo_" + crypto.randomUUID();
 
-  return res.status(200).json({
-    success: true,
-    event_id,
-    message: "Demo request event received"
-  });
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SECRET_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    console.error("Missing Supabase configuration");
+
+    return res.status(500).json({
+      success: false,
+      error: "Database configuration unavailable"
+    });
+  }
+
+  try {
+    const response = await fetch(
+      `${supabaseUrl.replace(/\/$/, "")}/rest/v1/Leads`,
+      {
+        method: "POST",
+        headers: {
+          "apikey": supabaseKey,
+          "Content-Type": "application/json",
+          "Prefer": "return=representation"
+        },
+        body: JSON.stringify({
+          lead_source: "website",
+          lead_status: "new",
+          revenue: 0,
+          first_touch_source: "website",
+          last_touch_source: "website"
+        })
+      }
+    );
+
+    if (!response.ok) {
+      console.error(
+        "Supabase insert failed:",
+        response.status,
+        await response.text()
+      );
+
+      return res.status(500).json({
+        success: false,
+        error: "Unable to save lead"
+      });
+    }
+
+    const savedLeads = await response.json();
+
+    if (!Array.isArray(savedLeads) || savedLeads.length !== 1) {
+      return res.status(500).json({
+        success: false,
+        error: "Lead confirmation failed"
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      event_id,
+      lead_id: savedLeads[0].id,
+      message: "Demo request saved successfully"
+    });
+
+  } catch (error) {
+    console.error("Database request failed:", error);
+
+    return res.status(500).json({
+      success: false,
+      error: "Database connection failed"
+    });
+  }
 };
