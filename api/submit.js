@@ -6,14 +6,8 @@ module.exports = async function handler(req, res) {
     "Access-Control-Allow-Origin",
     "https://jubinthomascontact-cell.github.io"
   );
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "POST, OPTIONS"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Content-Type"
-  );
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
   if (req.method === "OPTIONS") {
     return res.status(204).end();
@@ -26,7 +20,7 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  const { event_type } = req.body || {};
+  const { event_type, attribution } = req.body || {};
 
   if (event_type !== "demo_request") {
     return res.status(400).json({
@@ -34,6 +28,19 @@ module.exports = async function handler(req, res) {
       error: "Invalid event type"
     });
   }
+
+  const cleanUtm = (value) => {
+    if (typeof value !== "string") return null;
+    return value.trim().slice(0, 200) || null;
+  };
+
+  const utm = {
+    utm_source: cleanUtm(attribution?.utm_source),
+    utm_medium: cleanUtm(attribution?.utm_medium),
+    utm_campaign: cleanUtm(attribution?.utm_campaign),
+    utm_content: cleanUtm(attribution?.utm_content),
+    utm_term: cleanUtm(attribution?.utm_term)
+  };
 
   const event_id = "demo_" + crypto.randomUUID();
 
@@ -60,11 +67,12 @@ module.exports = async function handler(req, res) {
           "Prefer": "return=representation"
         },
         body: JSON.stringify({
-          lead_source: "website",
+          lead_source: utm.utm_source || "website",
           lead_status: "new",
           revenue: 0,
-          first_touch_source: "website",
-          last_touch_source: "website"
+          first_touch_source: utm.utm_source || "website",
+          last_touch_source: utm.utm_source || "website",
+          ...utm
         })
       }
     );
