@@ -31,8 +31,12 @@ module.exports = async function handler(req, res) {
 
   const allowedRoles = ["Principal", "IT coordinator", "Procurement", "Teacher", "Other"];
   const allowedNeeds = ["Interactive panels", "Installation support", "Teacher training"];
-  if (typeof school_name !== "string" || !school_name.trim() || school_name.trim().length > 90 ||
-      !allowedRoles.includes(enquirer_role) || !allowedNeeds.includes(primary_need)) {
+  // Remain compatible with previously deployed website versions.
+  // Validate supplied details, but do not reject legacy test requests that omit them.
+  if ((school_name !== undefined &&
+       (typeof school_name !== "string" || !school_name.trim() || school_name.trim().length > 90)) ||
+      (enquirer_role !== undefined && !allowedRoles.includes(enquirer_role)) ||
+      (primary_need !== undefined && !allowedNeeds.includes(primary_need))) {
     return res.status(400).json({ success: false, error: "Invalid demo enquiry details" });
   }
 
@@ -74,9 +78,9 @@ module.exports = async function handler(req, res) {
           "Prefer": "return=representation"
         },
         body: JSON.stringify({
-          school_name: school_name.trim(),
-          enquirer_role,
-          primary_need,
+          school_name: typeof school_name === "string" ? school_name.trim() : null,
+          enquirer_role: enquirer_role ?? null,
+          primary_need: primary_need ?? null,
           lead_source: utm.utm_source || "website",
           lead_status: "new",
           revenue: 0,
