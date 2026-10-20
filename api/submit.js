@@ -20,13 +20,20 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  const { event_type, attribution } = req.body || {};
+  const { event_type, attribution, school_name, enquirer_role, primary_need } = req.body || {};
 
   if (event_type !== "demo_request") {
     return res.status(400).json({
       success: false,
       error: "Invalid event type"
     });
+  }
+
+  const allowedRoles = ["Principal", "IT coordinator", "Procurement", "Teacher", "Other"];
+  const allowedNeeds = ["Interactive panels", "Installation support", "Teacher training"];
+  if (typeof school_name !== "string" || !school_name.trim() || school_name.trim().length > 90 ||
+      !allowedRoles.includes(enquirer_role) || !allowedNeeds.includes(primary_need)) {
+    return res.status(400).json({ success: false, error: "Invalid demo enquiry details" });
   }
 
   const cleanUtm = (value) => {
@@ -67,6 +74,9 @@ module.exports = async function handler(req, res) {
           "Prefer": "return=representation"
         },
         body: JSON.stringify({
+          school_name: school_name.trim(),
+          enquirer_role,
+          primary_need,
           lead_source: utm.utm_source || "website",
           lead_status: "new",
           revenue: 0,
