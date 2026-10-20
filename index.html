@@ -300,6 +300,9 @@
               },
               body: JSON.stringify({
                 event_type: 'demo_request',
+                school_name: document.querySelector('#school').value.trim(),
+                enquirer_role: document.querySelector('#role').value,
+                primary_need: document.querySelector('#need').value,
                 attribution: attribution
               })
             }
