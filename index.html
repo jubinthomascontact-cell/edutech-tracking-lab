@@ -79,6 +79,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       document.querySelector('#wa-feedback').textContent='Simulated WhatsApp CTA click recorded locally. No conversation was started.';
     });
     
+
 document.querySelector('#demo-form')
   .addEventListener('submit', async function(event) {
     event.preventDefault();
@@ -87,6 +88,17 @@ document.querySelector('#demo-form')
 
     const feedback = document.querySelector('#feedback');
     feedback.textContent = 'Sending test request...';
+
+    // Capture marketing attribution from the page URL
+    const params = new URLSearchParams(window.location.search);
+
+    const attribution = {
+      utm_source: params.get('utm_source') || null,
+      utm_medium: params.get('utm_medium') || null,
+      utm_campaign: params.get('utm_campaign') || null,
+      utm_content: params.get('utm_content') || null,
+      utm_term: params.get('utm_term') || null
+    };
 
     try {
       const response = await fetch(
@@ -97,7 +109,8 @@ document.querySelector('#demo-form')
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            event_type: 'demo_request'
+            event_type: 'demo_request',
+            attribution: attribution
           })
         }
       );
@@ -111,6 +124,8 @@ document.querySelector('#demo-form')
       if (!result.success || !result.event_id) {
         throw new Error('Invalid backend response');
       }
+
+      window.dataLayer = window.dataLayer || [];
 
       window.dataLayer.push({
         event: 'demo_form_submitted',
@@ -126,9 +141,7 @@ document.querySelector('#demo-form')
     } catch (error) {
       feedback.textContent =
         'Test request failed. Please try again.';
+
       console.error(error);
     }
   });
-  </script>
-</body>
-</html>
